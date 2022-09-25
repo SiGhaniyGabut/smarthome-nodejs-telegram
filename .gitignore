@@ -1,0 +1,5 @@
+node_modules
+firebaseConfig.js
+config/firebaseAdmin.json
+# Local Netlify folder
+.netlify
