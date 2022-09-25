@@ -3,7 +3,7 @@ const { app } = require('../../config/firebase');
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 bot.start((ctx) => ctx.reply('Welcome!'));
-bot.on("relays", async ctx => {
+bot.command("relays", async ctx => {
     const db = app.firestore();
     const docRef = db.collection('relays')
     const snapshot = await docRef.get();
@@ -15,7 +15,7 @@ bot.on("relays", async ctx => {
     ctx.reply(snapshot.docs.map(doc => doc.data()));
 });
 
-bot.on("relay", async ctx => {
+bot.command("relay", async ctx => {
     const db = app.firestore();
     const docRef = db.collection('relays').doc(ctx.message.text.split(" ")[1]);
     const doc = await docRef.get();
@@ -30,7 +30,18 @@ bot.on("relay", async ctx => {
 // bot.webhookCallback('/.netlify/functions/bot');
 
 exports.handler = async (event, context) => {
+    // const path = event.path;
+    // const body = event.body;
+    // const method = event.httpMethod;
 
+    // if (path === '/.netlify/functions/bot' && method === 'POST') {
+    //     return bot.handleUpdate(JSON.parse(body), context);
+    // }
+
+    // return {
+    //     statusCode: 200,
+    //     body: JSON.stringify({ message: 'Hello World' })
+    // }
     try {
         await bot.handleUpdate(JSON.parse(event.body))
         return {
