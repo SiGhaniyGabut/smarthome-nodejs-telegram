@@ -8,8 +8,8 @@ const relaysCollection = db.collection('relays')
 
 bot.start((ctx) => ctx.reply('Welcome!, I am SmartHome Bot!. Send /relays to see the relays lists'));
 
-bot.command("relays", async ctx => {
-    const relays = await relaysCollection.get();
+bot.command("relays", ctx => {
+    const relays = relaysCollection.get();
     if (relays.empty) {
         console.log('No matching documents.');
         return;
@@ -36,8 +36,8 @@ bot.action(/.+/, ctx => {
     setRelayStatus(ctx)
 });
 
-const setRelayStatus = async (context) => {
-    const relays = await relaysCollection.get();
+const setRelayStatus = (context) => {
+    const relays = relaysCollection.get();
     let id = context.callbackQuery.data.match(/(\d+)/i)[0];
     let status = context.callbackQuery.data.match(/on|off/i)[0];
     let relayId = `relay_${id}`;
