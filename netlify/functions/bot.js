@@ -1,9 +1,9 @@
-const { Telegraf, Markup } = require('telegraf');
+const { Telegraf, Markup, Context } = require('telegraf');
 const { app } = require('../../config/firebase');
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 bot.start((ctx) => ctx.reply('Welcome!'));
-bot.command("relays", async ctx => {
+bot.on("relays", async ctx => {
     const db = app.firestore();
     const docRef = db.collection('relays')
     const snapshot = await docRef.get();
@@ -15,11 +15,33 @@ bot.command("relays", async ctx => {
     ctx.reply(snapshot.docs.map(doc => doc.data()));
 });
 
-exports.handler = async (event, context) => {
-    bot.launch();
+bot.on("relay", async ctx => {
+    const db = app.firestore();
+    const docRef = db.collection('relays').doc(ctx.message.text.split(" ")[1]);
+    const doc = await docRef.get();
+    if (!doc.exists) {
+        console.log('No matching documents.');
+        return;
+    }
 
-    return {
-        statusCode: 200,
-        body: JSON.stringify({ message: 'Hello World' })
+    ctx.reply(doc.data());
+});
+
+// bot.webhookCallback('/.netlify/functions/bot');
+
+exports.handler = async (event, context) => {
+
+    try {
+        await bot.handleUpdate(JSON.parse(event.body))
+        return {
+            statusCode: 200,
+            body: ""
+        }
+    } catch (e) {
+        console.error("error in handler:", e)
+        return {
+            statusCode: 400,
+            body: "This endpoint is meant for bot and telegram communication"
+        }
     }
 }
