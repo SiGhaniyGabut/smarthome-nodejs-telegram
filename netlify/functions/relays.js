@@ -1,6 +1,5 @@
 const { app } = require('../../config/firebase');
 
-
 exports.handler = async(req, next) => {
     const db = app.firestore();
     const docRef = db.collection('relays')
